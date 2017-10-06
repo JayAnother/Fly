@@ -5,20 +5,51 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/windowBackgroundColor"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/app_bar_main"
     tools:context="org.jay.flytest.MainActivity">
 
-    <TextView
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:text="Hello World!"
+    <LinearLayout
+        android:id="@+id/ll"
+        android:orientation="vertical"
         android:gravity="center"
-        android:background="#458544"
-        android:textSize="33sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        android:padding="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    <ImageView
+        android:layout_marginTop="20dp"
+        android:id="@+id/iv_sloop"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:src="@drawable/sloop"/>
+    <TextView
+        android:text="Jay.Wang+"
+        android:textSize="44sp"
+        android:onClick="btnOnclick"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/ll_2"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    <ImageView
+        android:layout_marginTop="20dp"
+        android:id="@+id/iv_sloop_2"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:src="@drawable/sloop"/>
+    <TextView
+        android:text="Jay.Wang-"
+        android:textSize="44sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

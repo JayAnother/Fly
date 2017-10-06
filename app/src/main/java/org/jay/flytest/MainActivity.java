@@ -3,6 +3,7 @@ package org.jay.flytest;
 import org.jay.flytest.animation.ViewHelper;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -15,12 +16,17 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
 
 import java.lang.reflect.Field;
 
 public class MainActivity extends AppCompatActivity {
 
     public DrawerLayout mDrawerLayout;
+
+    private View view,view2,ll,ll2;
+    boolean flag =true;
+    boolean flag2 =true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +44,55 @@ public class MainActivity extends AppCompatActivity {
 
         setDrawerRightEdgeSize(mDrawerLayout,this,0.2f);
         initDrawerEvents();
+
+
+
+        view = findViewById(R.id.iv_sloop);
+        ll = findViewById(R.id.ll);
+
+        view2 = findViewById(R.id.iv_sloop_2);
+        ll2 = findViewById(R.id.ll_02);
+
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(flag){
+                    applyRotation(ll,0, 180);
+                }else{
+                    applyRotation(ll,180, 0);
+                }
+                flag = !flag;
+//                flag = false;
+//                applyRotation(ll,0, 180);
+//                applyRotation(ll,180, 0);
+            }
+        });
+
+//        view2.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if(flag2){
+//                    applyRotation(ll,0, 180);
+//                }else{
+//                    applyRotation(ll,180, 0);
+//                }
+//                flag = true;
+//            }
+//        });
+
+
+    }
+
+    private void applyRotation(View ll,float start, float end) {
+        final float centerX = ll.getWidth() / 2.0f;
+        final float centerY = ll.getHeight() / 2.0f;
+
+        final Rotate3dAnimation rotation = new Rotate3dAnimation(this, start, end, centerX, centerY, 1.0f, true);
+        rotation.setDuration(500);
+        rotation.setFillAfter(true);
+        rotation.setInterpolator(new AccelerateInterpolator());
+
+        ll.startAnimation(rotation);
     }
 
 
@@ -149,5 +204,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void btnOnclick(View view) {
+        startActivity(new Intent(this,FlipActivity.class));
     }
 }
