@@ -7,6 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    android:background="@drawable/img_frame_background"
     tools:openDrawer="start">
 
     <include
@@ -14,13 +15,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-    <android.support.design.widget.NavigationView
-        android:id="@+id/nav_view"
-        android:layout_width="wrap_content"
+    <fragment
+        android:id="@+id/id_left_menu"
+        android:name="org.jay.flytest.MenuLeftFragment"
+        android:layout_width="200dp"
         android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:fitsSystemWindows="true"
-        app:headerLayout="@layout/nav_header_main"
-        app:menu="@menu/activity_main_drawer"/>
+        android:layout_gravity="left"
+        android:tag="LEFT" />
 
 </android.support.v4.widget.DrawerLayout>
