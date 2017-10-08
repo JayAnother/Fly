@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
         final float centerX = ll.getWidth() / 2.0f;
         final float centerY = ll.getHeight() / 2.0f;
 
-        final Rotate3dAnimation rotation = new Rotate3dAnimation(this, start, end, centerX, centerY, 1.0f, true);
+        final Rotate3dAnimation rotation = new Rotate3dAnimation(this, start, end, centerX, centerY, 100f, true);
         rotation.setDuration(500);
         rotation.setFillAfter(true);
         rotation.setInterpolator(new AccelerateInterpolator());

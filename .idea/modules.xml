@@ -3,7 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Fly.iml" filepath="$PROJECT_DIR$/Fly.iml" />
+      <module fileurl="file://D:\Android\A-Project\Fly\Fly.iml" filepath="D:\Android\A-Project\Fly\Fly.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://D:\Android\A-Project\Fly\app\app.iml" filepath="D:\Android\A-Project\Fly\app\app.iml" />
     </modules>
   </component>
 </project>

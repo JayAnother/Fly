@@ -9,22 +9,15 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 
 /**
  * A quick and easy flip view through which you can create views with two sides like credit cards,
  * poker cards, flash cards etc.
- *
- * Add com.wajahatkarim3.easyflipview.EasyFlipView into your XML layouts with two direct children
- * views and you are done!
- * For more information, check http://github.com/wajahatkarim3/EasyFlipView
- *
- * @author Wajahat Karim (http://wajahatkarim.com)
- * @version 1.0.1 01/11/2017
  */
 public class EasyFlipView extends FrameLayout {
-
-    public static final String TAG = EasyFlipView.class.getSimpleName();
 
     public static final int DEFAULT_FLIP_DURATION = 400;
 
@@ -37,15 +30,17 @@ public class EasyFlipView extends FrameLayout {
 
     private AnimatorSet mSetLeftIn;
 
-    private Rotate3dAnimation mFrontRotation;
+    private Rotate3dAnimation mFront3DRotation;
 
-    private Rotate3dAnimation mBackRotation;
+    private Rotate3dAnimation mBack3DRotation;
 
     private boolean mIsBackVisible = false;
 
-    private View mCardFrontLayout;
+    private boolean mIs3D = true;
 
-    private View mCardBackLayout;
+    private View mFrontLayout;
+
+    private View mBackLayout;
 
     private boolean flipOnTouch;
 
@@ -58,6 +53,12 @@ public class EasyFlipView extends FrameLayout {
     private float x1;
 
     private float y1;
+
+    private int centerX;
+
+    private int centerY;
+
+    private int depthZ = 500;
 
     private FlipState mFlipState = FlipState.FRONT_SIDE;
 
@@ -110,106 +111,151 @@ public class EasyFlipView extends FrameLayout {
     }
 
     private void findViews() {
-        mCardFrontLayout = getChildAt(1);
-        mCardBackLayout = getChildAt(0);
+        mFrontLayout = getChildAt(1);
+        mBackLayout = getChildAt(0);
 
         mFlipState = FlipState.FRONT_SIDE;
         if (!isFlipOnTouch()) {
-            mCardFrontLayout.setVisibility(VISIBLE);
-            mCardBackLayout.setVisibility(GONE);
+            mFrontLayout.setVisibility(VISIBLE);
+            mBackLayout.setVisibility(GONE);
         }
     }
 
     private void loadAnimations() {
-        mFrontRotation=generate3dRotation(mCardFrontLayout,0,180);
-        mBackRotation=generate3dRotation(mCardBackLayout,180,0);
-
-        mSetRightOut = (AnimatorSet) AnimatorInflater
-            .loadAnimator(this.context, R.animator.animation_flip_out);
-        mSetLeftIn = (AnimatorSet) AnimatorInflater
-            .loadAnimator(this.context, R.animator.animation_flip_in);
-
-        mSetRightOut.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animator) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animator) {
-
-                if (mFlipState == FlipState.FRONT_SIDE) {
-                    mCardBackLayout.setVisibility(GONE);
-                    mCardFrontLayout.setVisibility(VISIBLE);
-                } else {
-                    mCardBackLayout.setVisibility(VISIBLE);
-                    mCardFrontLayout.setVisibility(GONE);
+        if(mIs3D){
+            mFront3DRotation=generate3dRotation(mBackLayout,0,90,true);
+            mFront3DRotation.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
                 }
-            }
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    mBackLayout.setVisibility(View.GONE);
+                    mFrontLayout.setVisibility(View.VISIBLE);
+                    Rotate3dAnimation rotate3dAnimation=generate3dRotation(mFrontLayout,270,360,false);
+                    mFrontLayout.startAnimation(rotate3dAnimation);
+                }
+                @Override
+                public void onAnimationRepeat(Animation animation) {
 
-            @Override
-            public void onAnimationCancel(Animator animator) {
+                }
+            });
+            mBack3DRotation=generate3dRotation(mBackLayout,360,270,true);
+            mBack3DRotation.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                }
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    mFrontLayout.setVisibility(View.GONE);
+                    mBackLayout.setVisibility(View.VISIBLE);
+                    Rotate3dAnimation rotate3dAnimation=generate3dRotation(mBackLayout,90,0,false);
+                    mBackLayout.startAnimation(rotate3dAnimation);
+                }
+                @Override
+                public void onAnimationRepeat(Animation animation) {
 
-            }
+                }
+            });
+        }else{
+            mSetRightOut = (AnimatorSet) AnimatorInflater.loadAnimator(this.context, R.animator.animation_flip_out);
+            mSetLeftIn = (AnimatorSet) AnimatorInflater.loadAnimator(this.context, R.animator.animation_flip_in);
+            mSetRightOut.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animator) {
 
-            @Override
-            public void onAnimationRepeat(Animator animator) {
+                }
 
-            }
-        });
-        setFlipDuration(flipDuration);
+                @Override
+                public void onAnimationEnd(Animator animator) {
+
+                    if (mFlipState == FlipState.FRONT_SIDE) {
+                        mBackLayout.setVisibility(GONE);
+                        mFrontLayout.setVisibility(VISIBLE);
+                    } else {
+                        mBackLayout.setVisibility(VISIBLE);
+                        mFrontLayout.setVisibility(GONE);
+                    }
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animator) {
+
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animator) {
+
+                }
+            });
+        }
+
+//        setFlipDuration(flipDuration);
     }
 
-    private Rotate3dAnimation generate3dRotation(View view,float fromDegree,float toDegree) {
+    private Rotate3dAnimation generate3dRotation(View view,float fromDegree,float toDegree,boolean reverse) {
         final float centerX = view.getWidth() / 2.0f;
         final float centerY = view.getHeight() / 2.0f;
-        Rotate3dAnimation rotate3dAnimation = new Rotate3dAnimation(context, fromDegree, toDegree, centerX, centerY, 1.0f, true);
-        rotate3dAnimation.setDuration(500);
+        Rotate3dAnimation rotate3dAnimation = new Rotate3dAnimation(context, fromDegree, toDegree, centerX, centerY, depthZ, reverse);
+        rotate3dAnimation.setDuration(flipDuration);
         rotate3dAnimation.setFillAfter(true);
-        rotate3dAnimation.setInterpolator(new AccelerateInterpolator());
+        rotate3dAnimation.setInterpolator(new DecelerateInterpolator());
         return  rotate3dAnimation;
     }
 
     private void changeCameraDistance() {
         int distance = 8000;
         float scale = getResources().getDisplayMetrics().density * distance;
-        mCardFrontLayout.setCameraDistance(scale);
-        mCardBackLayout.setCameraDistance(scale);
+        mFrontLayout.setCameraDistance(scale);
+        mBackLayout.setCameraDistance(scale);
     }
 
     /**
      * Play the animation of flipping and flip the view for one side!
      */
     public void flipTheView() {
-
         if (!flipEnabled)
             return;
+        if(mIs3D){
+            if (mFront3DRotation.hasStarted() && !mFront3DRotation.hasEnded()) {
+                return;
+            }
+            if (mBack3DRotation.hasStarted() && !mBack3DRotation.hasEnded()) {
+                return;
+            }
+            if (mFlipState == FlipState.FRONT_SIDE) {
+                // From front to back
+                mFrontLayout.startAnimation(mFront3DRotation);
+                mFlipState = FlipState.BACK_SIDE;
+            } else {
+                // from back to front
+                mBackLayout.startAnimation(mBack3DRotation);
+                mFlipState = FlipState.FRONT_SIDE;
+            }
+        }else{
+            if (mSetRightOut.isRunning() || mSetLeftIn.isRunning())
+                return;
 
-        if (mSetRightOut.isRunning() || mSetLeftIn.isRunning())
-            return;
+            mBackLayout.setVisibility(VISIBLE);
+            mFrontLayout.setVisibility(VISIBLE);
 
-        mCardBackLayout.setVisibility(VISIBLE);
-        mCardFrontLayout.setVisibility(VISIBLE);
-
-        if (mFlipState == FlipState.FRONT_SIDE) {
-            // From front to back
-            mSetRightOut.setTarget(mCardFrontLayout);
-            mSetLeftIn.setTarget(mCardBackLayout);
-            mSetRightOut.start();
-            mSetLeftIn.start();
-//            mCardFrontLayout.startAnimation(mFrontRotation);
-            mIsBackVisible = true;
-            mFlipState = FlipState.BACK_SIDE;
-        } else {
-            // from back to front
-            mSetRightOut.setTarget(mCardBackLayout);
-            mSetLeftIn.setTarget(mCardFrontLayout);
-            mSetRightOut.start();
-            mSetLeftIn.start();
-//            mCardBackLayout.startAnimation(mBackRotation);
-            mIsBackVisible = false;
-            mFlipState = FlipState.FRONT_SIDE;
+            if (mFlipState == FlipState.FRONT_SIDE) {
+                // From front to back
+                mSetRightOut.setTarget(mFrontLayout);
+                mSetLeftIn.setTarget(mBackLayout);
+                mSetRightOut.start();
+                mSetLeftIn.start();
+                mFlipState = FlipState.BACK_SIDE;
+            } else {
+                // from back to front
+                mSetRightOut.setTarget(mBackLayout);
+                mSetLeftIn.setTarget(mFrontLayout);
+                mSetRightOut.start();
+                mSetLeftIn.start();
+                mFlipState = FlipState.FRONT_SIDE;
+            }
         }
+
     }
 
     /**
